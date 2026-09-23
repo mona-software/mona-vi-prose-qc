@@ -1,5 +1,7 @@
 # mona-vi-prose-qc
 
+[![test](https://github.com/themonagroup/mona-vi-prose-qc/actions/workflows/test.yml/badge.svg)](https://github.com/themonagroup/mona-vi-prose-qc/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Công cụ dòng lệnh (CLI) kiểm tra "nhịp văn" tiếng Việt và phát hiện những dấu hiệu cho thấy một đoạn văn bản nghe như do AI viết ra, thay vì do người viết tự nhiên.
 
 ## Vấn đề công cụ này giải quyết
