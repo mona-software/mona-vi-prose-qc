@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mona-vi-prose-qc"
+version = "0.1.0"
+description = "Kiểm nhịp văn tiếng Việt và phát hiện dấu hiệu văn bản do AI viết"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "The MONA Group", email = "opensource@mona.media" }]
+keywords = ["vietnamese-nlp", "prose-quality", "ai-text-detection", "content-qc", "cli-tool"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Linguistic",
+    "Environment :: Console",
+]
+
+[project.urls]
+Homepage = "https://github.com/themonagroup/mona-vi-prose-qc"
+
+[project.scripts]
+mona-vi-prose-qc = "mona_vi_prose_qc.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
