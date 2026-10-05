@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/themonagroup/mona-vi-prose-qc"
+Homepage = "https://github.com/mona-software/mona-vi-prose-qc"
 
 [project.scripts]
 mona-vi-prose-qc = "mona_vi_prose_qc.cli:main"

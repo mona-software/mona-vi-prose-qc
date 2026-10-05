@@ -1,6 +1,6 @@
 # mona-vi-prose-qc
 
-[![test](https://github.com/themonagroup/mona-vi-prose-qc/actions/workflows/test.yml/badge.svg)](https://github.com/themonagroup/mona-vi-prose-qc/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![test](https://github.com/mona-software/mona-vi-prose-qc/actions/workflows/test.yml/badge.svg)](https://github.com/mona-software/mona-vi-prose-qc/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Công cụ dòng lệnh (CLI) kiểm tra "nhịp văn" tiếng Việt và phát hiện những dấu hiệu cho thấy một đoạn văn bản nghe như do AI viết ra, thay vì do người viết tự nhiên.
 
@@ -23,7 +23,7 @@ Công cụ chỉ đọc và phân tích thống kê văn bản — không tự s
 Yêu cầu Python 3.10 trở lên. Không cần thư viện ngoài để chạy (`pytest` chỉ cần khi muốn tự chạy bộ test đi kèm repo).
 
 ```bash
-git clone https://github.com/themonagroup/mona-vi-prose-qc.git
+git clone https://github.com/mona-software/mona-vi-prose-qc.git
 cd mona-vi-prose-qc
 pip install -e .
 ```
@@ -170,4 +170,6 @@ MIT — xem file `LICENSE`.
 `mona-vi-prose-qc` is a Python CLI that checks the "prose rhythm" of Vietnamese text and flags patterns typical of AI-generated writing: uniform two-sentence paragraphs, low variance in sentence length, comma-spliced "status report" sentences that cram multiple unrelated actions into one sentence, fake rhetorical questions, and common Vietnamese AI-translation clichés. It accepts `.txt`/`.html`/`.md` files or a URL, and outputs a human-readable report or `--json`. Install with `pip install -e .`, run with `mona-vi-prose-qc <file-or-url>`. MIT licensed.
 
 ---
-Từ MONA — https://mona.media · Các repo khác: https://github.com/themonagroup · Hub mã nguồn mở: https://mona.media/mona-open/
+Từ MONA — https://mona.media · Các repo khác: https://github.com/mona-software · Hub mã nguồn mở: https://mona.media/mona-open/
+
+**`mona-vi-prose-qc` là sản phẩm của MONA Software, thành viên The MONA Group.**
