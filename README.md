@@ -1,51 +1,46 @@
 # mona-vi-prose-qc
 
+A command-line tool that measures sentence and paragraph rhythm in Vietnamese text and flags patterns common in machine-generated prose, for editors reviewing content before publishing.
+
 [![test](https://github.com/mona-software/mona-vi-prose-qc/actions/workflows/test.yml/badge.svg)](https://github.com/mona-software/mona-vi-prose-qc/actions/workflows/test.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Công cụ dòng lệnh (CLI) kiểm tra "nhịp văn" tiếng Việt và phát hiện những dấu hiệu cho thấy một đoạn văn bản nghe như do AI viết ra, thay vì do người viết tự nhiên.
+The tool targets Vietnamese content; its cliché list and patterns are Vietnamese. It only analyzes text statistically: it does not edit the text and does not call any AI model. It runs offline unless you pass a URL.
 
-## Vấn đề công cụ này giải quyết
+## Install
 
-Văn bản do các mô hình ngôn ngữ (ChatGPT, Gemini, Claude...) sinh ra thường có một số thói quen lặp đi lặp lại rất dễ nhận ra nếu để ý kỹ, dù từng câu đọc riêng lẻ vẫn "mượt". Ví dụ: đoạn nào cũng đúng hai câu, câu nào cũng dài xấp xỉ nhau, hay xuất hiện kiểu câu liệt kê tiến độ bằng dấu phẩy ("đã làm A, B đang chờ, C thì lỗi, D chưa xong"), thỉnh thoảng chèn một câu hỏi tu từ rồi tự trả lời ngay, và ưa dùng những cụm từ sáo rỗng kiểu dịch máy như "hành trình", "kỷ nguyên số", "mở khóa tiềm năng".
-
-Khi biên tập viên đọc lướt một bài, tai mắt con người vẫn có thể bỏ sót những dấu hiệu này, đặc biệt với bài dài. `mona-vi-prose-qc` đọc toàn bộ văn bản, đo các chỉ số về nhịp câu/đoạn, rồi liệt kê chính xác vị trí và lý do nghi ngờ, để người biên tập quyết định sửa lại cho ra giọng người thật trước khi đăng.
-
-## Dùng để làm gì
-
-- Chạy QC nhanh trước khi đăng một bài viết (blog, landing page, tài liệu nội bộ) lên website.
-- Tự động hoá bước kiểm tra này trong quy trình biên tập, nhờ mã thoát (exit code) 0 = đạt, 1 = có lỗi.
-- Tích hợp vào các pipeline biên tập nội dung khác qua đầu ra JSON có cấu trúc.
-
-Công cụ chỉ đọc và phân tích thống kê văn bản — không tự sửa bài, không gọi bất kỳ mô hình AI nào, chạy hoàn toàn offline (trừ trường hợp bạn đưa vào một URL để công cụ tự tải nội dung trang đó về kiểm tra).
-
-## Cài đặt
-
-Yêu cầu Python 3.10 trở lên. Không cần thư viện ngoài để chạy (`pytest` chỉ cần khi muốn tự chạy bộ test đi kèm repo).
+Requires Python 3.10+. No third-party runtime dependencies.
 
 ```bash
-git clone https://github.com/mona-software/mona-vi-prose-qc.git
+git clone https://github.com/mona-software/mona-vi-prose-qc
 cd mona-vi-prose-qc
 pip install -e .
 ```
 
-Sau khi cài, lệnh `mona-vi-prose-qc` sẽ có sẵn trong terminal.
-
-## Cách dùng
+## Usage
 
 ```bash
-mona-vi-prose-qc duong-dan-file.txt
-mona-vi-prose-qc duong-dan-file.html
-mona-vi-prose-qc duong-dan-file.md
-mona-vi-prose-qc https://vi-du.com/mot-bai-viet
-mona-vi-prose-qc duong-dan-file.txt --json
-mona-vi-prose-qc duong-dan-file.txt --custom-cliches cum-tu-rieng.txt
+mona-vi-prose-qc article.txt
+mona-vi-prose-qc article.html
+mona-vi-prose-qc article.md
+mona-vi-prose-qc https://example.com/some-article
+mona-vi-prose-qc article.txt --json
+mona-vi-prose-qc article.txt --custom-cliches my-phrases.txt
 ```
 
-File `.html` và `.md` sẽ được bóc tách về văn bản thuần trước khi phân tích (bỏ thẻ HTML, bỏ cú pháp Markdown), còn khi trỏ vào một URL thì công cụ tự tải trang về và làm điều tương tự.
+`.html`/`.htm` and `.md`/`.markdown` files are converted to plain text first. A URL is downloaded and its HTML stripped (`script`, `style`, `head`, `nav` and `footer` are skipped). Any other file is read as plain text.
 
-### Ví dụ chạy thật
+| Option | Description |
+| --- | --- |
+| `source` | File path (`.txt`, `.html`, `.md`) or URL |
+| `--json` | Print the report as JSON |
+| `--custom-cliches PATH` | Text file with extra phrases to flag, one per line; matching is case-insensitive and lines starting with `#` are ignored |
+| `--fail-on-warning` | Exit with code 1 when there are warnings, not only failures |
 
-Giả sử có file `bai-mau.txt` với nội dung sau — cố tình trộn cả câu nhồi ý, cụm sáo rỗng lẫn một đoạn văn viết tự nhiên để minh hoạ:
+Exit codes: `0` no failures, `1` at least one failure (or a warning with `--fail-on-warning`), `2` the input or custom phrase file could not be read.
+
+### Example
+
+`sample.txt`:
 
 ```
 Đây là một hành trình đầy hứa hẹn trong kỷ nguyên số, khi mọi doanh nghiệp đều muốn bứt phá.
@@ -57,16 +52,14 @@ Buổi sáng hôm ấy trời se lạnh, và Lan vẫn ra khỏi nhà từ rất
 Dự án bị kẹt máy chủ, kẹt cơ sở dữ liệu, kẹt tên miền. Đội kỹ thuật đang xử lý từng phần một cách cẩn trọng và có kế hoạch rõ ràng cho từng đầu việc còn lại.
 ```
 
-Chạy lệnh:
-
 ```bash
-mona-vi-prose-qc bai-mau.txt
+mona-vi-prose-qc sample.txt
 ```
 
-Kết quả in ra (đầu ra thật, chưa chỉnh sửa):
+Output (messages are in Vietnamese):
 
 ```
-=== mona-vi-prose-qc — bai-mau.txt ===
+=== mona-vi-prose-qc — sample.txt ===
 Kết quả tổng: FAIL
 
 -- Số liệu --
@@ -98,78 +91,44 @@ Kết quả tổng: FAIL
           → "kỷ nguyên"
 ```
 
-Chú ý ba điều công cụ đã bắt đúng: (1) câu "Đã sửa lỗi đăng nhập, báo cáo đang chờ duyệt..." bị gắn cờ là câu nhồi ý bằng dấu phẩy — kiểu câu báo cáo tiến độ rất đặc trưng của văn AI; (2) ba cụm "hành trình", "đầy hứa hẹn", "kỷ nguyên" trong đoạn mở bài bị bắt là cụm sáo rỗng; (3) ngược lại, câu "Dự án bị kẹt máy chủ, kẹt cơ sở dữ liệu, kẹt tên miền" — vốn cũng có nhiều dấu phẩy — KHÔNG bị bắt nhầm, vì đây là kiểu liệt kê điệp từ hợp lệ ("kẹt... kẹt... kẹt..."), không phải nhồi ý.
+The comma-separated status-report sentence in paragraph 2 is flagged, while the parallel list with a repeated word in paragraph 4 ("kẹt… kẹt… kẹt…") is not.
 
-Dùng `--json` khi cần đưa kết quả vào một pipeline khác:
+With `--json`, the report is an object with `pass` (boolean), `stats` (the metrics above) and `findings` (a list of `{rule, level, message, detail}`, where `level` is `fail` or `warning`).
 
-```bash
-mona-vi-prose-qc bai-mau.txt --json
-```
+## Checks
 
-sẽ in ra đúng cấu trúc trên nhưng ở dạng JSON, gồm `pass` (true/false), `stats` (toàn bộ số liệu đo được) và `findings` (danh sách từng lỗi/cảnh báo kèm mức độ `fail`/`warning`).
+1. Share of paragraphs with exactly two sentences (fail above 35%).
+2. Share of paragraphs with four or more sentences (warn below 20%).
+3. Standard deviation of sentence length in words (fail below 9.0).
+4. Share of long sentences (28+ words) and short sentences (7 words or fewer).
+5. Runs of consecutive short sentences within a paragraph.
+6. Runs of consecutive paragraphs with the same sentence count.
+7. Sentences that pack several short clauses separated by commas, excluding parallel lists with a repeated word.
+8. Rhetorical questions of the "Bạn có biết…?" type.
+9. Vietnamese cliché phrases and patterns, plus any phrases from `--custom-cliches`.
 
-### Thêm cụm sáo rỗng của riêng bạn
+Thresholds are defined in the `Config` dataclass in `src/mona_vi_prose_qc/metrics.py`.
 
-Tạo một file `.txt`, mỗi dòng một cụm (không phân biệt hoa/thường, dòng bắt đầu bằng `#` sẽ bị bỏ qua):
-
-```
-đỉnh của chóp
-không có đối thủ trên thị trường
-```
-
-Rồi chạy:
-
-```bash
-mona-vi-prose-qc bai-mau.txt --custom-cliches cum-tu-rieng.txt
-```
-
-### Mã thoát (exit code)
-
-- `0`: bài đạt, không có lỗi `fail` nào.
-- `1`: bài có ít nhất một lỗi `fail` (hoặc có cảnh báo, nếu chạy kèm `--fail-on-warning`).
-- `2`: lỗi khi đọc file/URL đầu vào.
-
-## Các mục được kiểm tra
-
-1. Tỷ lệ đoạn văn đúng hai câu — quá nhiều là dấu hiệu viết đều tay kiểu máy.
-2. Tỷ lệ đoạn văn đào sâu (từ bốn câu trở lên) — quá ít nghĩa là bài lướt qua ý mà không khai triển.
-3. Độ lệch chuẩn độ dài câu (số từ/câu) toàn bài — văn tự nhiên có câu ngắn câu dài xen kẽ, văn máy thường đều đều.
-4. Tỷ lệ câu rất dài và tỷ lệ câu rất ngắn.
-5. Chuỗi từ ba câu ngắn liên tiếp trở lên trong cùng một đoạn — nhịp trống kiểu khẩu hiệu liên hoàn.
-6. Chuỗi từ ba đoạn liên tiếp trở lên có cùng số câu — khuôn mẫu máy.
-7. Câu nhồi nhiều ý bằng dấu phẩy kiểu điện tín báo cáo tiến độ (mục quan trọng nhất) — có loại trừ trường hợp liệt kê song song hợp lệ.
-8. Câu hỏi tu từ giả tạo kiểu "Bạn có biết...?" rồi tự trả lời ngay.
-9. Cụm từ và mẫu câu sáo rỗng tiếng Việt thường gặp trong văn dịch máy/AI.
-
-Toàn bộ ngưỡng số ở trên nằm trong `src/mona_vi_prose_qc/metrics.py` (lớp `Config`) và có thể tinh chỉnh khi gọi thư viện trực tiếp bằng Python, thay vì chỉ dùng qua CLI.
-
-## Dùng như thư viện Python
+## Library use
 
 ```python
 from mona_vi_prose_qc.metrics import analyze, Config
 
-report = analyze(noi_dung_bai_viet, cfg=Config(min_sentence_length_std=8))
+report = analyze(article_text, cfg=Config(min_sentence_length_std=8))
 print(report.to_dict())
 ```
 
-## Chạy test
+`analyze()` also accepts `custom_cliches=[...]`.
+
+## Development
 
 ```bash
 pip install -e ".[dev]"
 pytest
 ```
 
-## Giấy phép
+## License
 
-MIT — xem file `LICENSE`.
+MIT, see [LICENSE](LICENSE).
 
----
-
-## English (short version)
-
-`mona-vi-prose-qc` is a Python CLI that checks the "prose rhythm" of Vietnamese text and flags patterns typical of AI-generated writing: uniform two-sentence paragraphs, low variance in sentence length, comma-spliced "status report" sentences that cram multiple unrelated actions into one sentence, fake rhetorical questions, and common Vietnamese AI-translation clichés. It accepts `.txt`/`.html`/`.md` files or a URL, and outputs a human-readable report or `--json`. Install with `pip install -e .`, run with `mona-vi-prose-qc <file-or-url>`. MIT licensed.
-
----
-Từ MONA — https://mona.media · Các repo khác: https://github.com/mona-software · Hub mã nguồn mở: https://mona.media/mona-open/
-
-**`mona-vi-prose-qc` là sản phẩm của MONA Software, thành viên The MONA Group.**
+**`mona-vi-prose-qc` is a product of MONA Software, a member of The MONA Group.**
