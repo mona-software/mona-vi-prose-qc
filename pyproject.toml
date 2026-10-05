@@ -9,7 +9,7 @@ description = "Kiểm nhịp văn tiếng Việt và phát hiện dấu hiệu v
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "The MONA Group", email = "opensource@mona.media" }]
+authors = [{ name = "MONA Software", email = "opensource@mona.media" }]
 keywords = ["vietnamese-nlp", "prose-quality", "ai-text-detection", "content-qc", "cli-tool"]
 classifiers = [
     "Programming Language :: Python :: 3",
